@@ -1,6 +1,7 @@
 import { Plugin } from "obsidian";
 import { MorningPagesSettings, MorningPagesSettingsTab } from "src/Settings";
 import { DEFAULT_SETTINGS } from "src/Settings";
+import openMorningPage from "src/utils/openMorningPage";
 
 export default class MorningPages extends Plugin {
 	settings: MorningPagesSettings;
@@ -10,6 +11,11 @@ export default class MorningPages extends Plugin {
 
 		// Adding settings tab
 		this.addSettingTab(new MorningPagesSettingsTab(this.app, this));
+
+		// Button to create a new morning page
+		this.addRibbonIcon("sunrise", "Create Morning Page", () => {
+			openMorningPage(this.app, this);
+		});
 	}
 
 	onunload() {}

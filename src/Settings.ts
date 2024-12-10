@@ -35,7 +35,11 @@ export class MorningPagesSettingsTab extends PluginSettingTab {
 					.setPlaceholder("MMMM dd, yyyy")
 					.setValue(this.plugin.settings.morningPagesFolder)
 					.onChange(async (value) => {
-						this.plugin.settings.morningPagesFolder = value;
+						// remove trailing slash
+						this.plugin.settings.morningPagesFolder = value.replace(
+							/\/$/,
+							""
+						);
 						await this.plugin.saveSettings();
 					})
 			);
@@ -59,7 +63,7 @@ export class MorningPagesSettingsTab extends PluginSettingTab {
 			.addDropdown((dropdown) =>
 				dropdown
 					.addOption("YYYY-MM-DD", "2024-08-26.md")
-					.addOption("MMM DD, YYYY", "August 26, 2024.md")
+					.addOption("MMM DD, YYYY", "Aug 26, 2024.md")
 					.setValue(this.plugin.settings.noteTitleFormat)
 					.onChange(async (value) => {
 						this.plugin.settings.noteTitleFormat = value;
