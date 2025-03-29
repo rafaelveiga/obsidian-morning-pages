@@ -23,9 +23,20 @@ export class MorningPagesPlugin implements PluginValue {
 	}
 
 	update(update: ViewUpdate) {
-		// You can update widget content based on editor changes if needed
 		if (update.docChanged) {
-			// Update widget content if necessary
+			const wordCount =
+				update.state.doc.text.join(" ").split(" ").length - 1;
+			const progress = (wordCount / 1000) * 100;
+
+			this.dom
+				.querySelector(".word-counter-widget")
+				?.querySelector("progress")
+				?.setAttribute("value", progress.toString());
+
+			this.dom
+				.querySelector(".word-counter-widget")
+				?.querySelector(".word-count-div")
+				?.setText(`${wordCount}/1000`);
 		}
 	}
 
