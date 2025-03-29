@@ -1,56 +1,37 @@
-import { RangeSetBuilder } from "@codemirror/state";
 import {
 	PluginValue,
 	EditorView,
 	ViewUpdate,
 	ViewPlugin,
-	WidgetType,
-	DecorationSet,
-	Decoration,
 } from "@codemirror/view";
+import { WordCounterWidget } from "./WordCounterWidget";
 
 export class MorningPagesPlugin implements PluginValue {
-	decorations: DecorationSet;
-	dom: HTMLDivElement;
+	dom: HTMLElement;
 
 	constructor(view: EditorView) {
-		this.dom = view.dom.appendChild(document.createElement("div"));
-		this.dom.style.position = "absolute";
-		this.dom.style.top = "0";
-		this.dom.style.right = "0";
-		this.dom.style.zIndex = "1000";
-		this.dom.style.backgroundColor = "white";
-		this.dom.style.padding = "10px";
-		this.dom.style.border = "1px solid black";
-		this.decorations = this.buildDecorations(view);
+		// Create widget and add it to the DOM
+		this.dom = document.createElement("div");
+		this.dom.className = "morning-pages-widget";
+
+		// Add the actual widget content
+		const widgetContent = new WordCounterWidget().toDOM(view);
+		this.dom.appendChild(widgetContent);
+
+		// Add the widget to the editor's parent container
+		view.dom.parentElement?.appendChild(this.dom);
 	}
 
 	update(update: ViewUpdate) {
-		if (update.docChanged || update.viewportChanged) {
-			this.decorations = this.buildDecorations(update.view);
+		// You can update widget content based on editor changes if needed
+		if (update.docChanged) {
+			// Update widget content if necessary
 		}
 	}
 
-	destroy() {}
-
-	buildDecorations(view: EditorView) {
-		const widgets = [
-			Decoration.widget({
-				widget: new WordCounterWidget(),
-				side: 1,
-				block: true,
-			}).range(10, 100),
-		];
-
-		return Decoration.set(widgets);
-	}
-}
-
-class WordCounterWidget extends WidgetType {
-	toDOM() {
-		const div = document.createElement("div");
-		div.innerText = "😀😃😄😁😆😅😂Word Counter";
-		return div;
+	destroy() {
+		// Clean up by removing the DOM element when plugin is destroyed
+		this.dom.remove();
 	}
 }
 
