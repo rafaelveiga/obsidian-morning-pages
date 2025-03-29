@@ -26,3 +26,10 @@
   justify-content: center;
   gap: 12px;
 }
+
+.morning-pages-widget .word-counter-widget .morning-pages-progress-text {
+  font-size: 12px;
+  word-wrap: nowrap;
+  text-overflow: ellipsis;
+}
+

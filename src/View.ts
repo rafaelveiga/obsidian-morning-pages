@@ -1,15 +1,14 @@
-import {
-	PluginValue,
-	EditorView,
-	ViewUpdate,
-	ViewPlugin,
-} from "@codemirror/view";
+import { PluginValue, EditorView, ViewUpdate } from "@codemirror/view";
 import { WordCounterWidget } from "./WordCounterWidget";
+import { MorningPagesSettings } from "./Settings";
 
 export class MorningPagesPlugin implements PluginValue {
 	dom: HTMLElement;
+	minimumWordCount: number;
 
-	constructor(view: EditorView) {
+	constructor(view: EditorView, settings: MorningPagesSettings) {
+		this.minimumWordCount = settings.minimumWordCount;
+
 		// Create widget and add it to the DOM
 		this.dom = document.createElement("div");
 		this.dom.className = "morning-pages-widget";
@@ -23,21 +22,35 @@ export class MorningPagesPlugin implements PluginValue {
 	}
 
 	update(update: ViewUpdate) {
-		if (update.docChanged) {
-			const wordCount =
-				update.state.doc.text.join(" ").split(" ").length - 1;
-			const progress = (wordCount / 1000) * 100;
+		const wordCount = update.state.doc.text.join(" ").split(" ").length - 1;
+		const progress = (wordCount / this.minimumWordCount) * 100;
 
+		if (progress > 100) {
 			this.dom
 				.querySelector(".word-counter-widget")
-				?.querySelector("progress")
-				?.setAttribute("value", progress.toString());
-
+				?.querySelector(".morning-pages-progress-text")
+				?.setText("Success! 🎉");
+		} else {
 			this.dom
 				.querySelector(".word-counter-widget")
-				?.querySelector(".word-count-div")
-				?.setText(`${wordCount}/1000`);
+				?.querySelector(".morning-pages-progress-text")
+				?.setText("Morning Pages Progress:");
 		}
+
+		this.dom
+			.querySelector(".word-counter-widget")
+			?.querySelector(".morning-pages-progress-bar")
+			?.setAttribute("value", progress.toFixed(0).toString());
+
+		this.dom
+			.querySelector(".word-counter-widget")
+			?.querySelector(".morning-pages-word-count")
+			?.setText(`${wordCount}/${this.minimumWordCount}`);
+
+		this.dom
+			.querySelector(".word-counter-widget")
+			?.querySelector(".morning-pages-percentage")
+			?.setText(`${progress.toFixed(2)}%`);
 	}
 
 	destroy() {
@@ -45,5 +58,3 @@ export class MorningPagesPlugin implements PluginValue {
 		this.dom.remove();
 	}
 }
-
-export const morningPagesPlugin = ViewPlugin.fromClass(MorningPagesPlugin);

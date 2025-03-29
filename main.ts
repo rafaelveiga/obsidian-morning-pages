@@ -1,8 +1,9 @@
 import { Plugin } from "obsidian";
+import { ViewPlugin } from "@codemirror/view";
 import { MorningPagesSettings, MorningPagesSettingsTab } from "src/Settings";
 import { DEFAULT_SETTINGS } from "src/Settings";
 import openMorningPage from "src/utils/openMorningPage";
-import { morningPagesPlugin } from "src/View";
+import { MorningPagesPlugin } from "src/View";
 
 export default class MorningPages extends Plugin {
 	settings: MorningPagesSettings;
@@ -16,6 +17,10 @@ export default class MorningPages extends Plugin {
 		// Button to create a new morning page
 		this.addRibbonIcon("sunrise", "Create Morning Page", () => {
 			openMorningPage(this.app, this);
+		});
+
+		const morningPagesPlugin = ViewPlugin.define((view) => {
+			return new MorningPagesPlugin(view, this.settings);
 		});
 
 		this.registerEditorExtension(morningPagesPlugin);
@@ -33,5 +38,6 @@ export default class MorningPages extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+		this.app.workspace.updateOptions();
 	}
 }
